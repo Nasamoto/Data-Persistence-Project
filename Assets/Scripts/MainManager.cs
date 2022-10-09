@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class MainManager : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text BestScoreText;
+    public TextMeshProUGUI Record;
     public GameObject GameOverText;
     
     private bool m_Started = false;
@@ -36,6 +39,8 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+        LoadScore();
+        
     }
 
     private void Update()
@@ -71,6 +76,33 @@ public class MainManager : MonoBehaviour
     public void GameOver()
     {
         m_GameOver = true;
+        SaveScore();
+        LoadScore();
         GameOverText.SetActive(true);
+    }
+
+    public void LoadScore()
+    {
+        PlayerInfo.Instance.LoadInfo();
+        BestScoreText.text = "Best Score: " + PlayerInfo.Instance.highestPlayer + " : " + PlayerInfo.Instance.highestScore;
+        UpdateRecord();
+    }    
+
+    public void SaveScore()
+    {
+        PlayerInfo.Instance.SaveInfo(m_Points);
+    }
+
+    public void UpdateRecord()
+    {
+        Record.text = "";
+        for(int i = 0; i < PlayerInfo.Instance.Data.Users.Count; ++i)
+        {
+            string name = PlayerInfo.Instance.Data.Users[i].name;
+            int score = PlayerInfo.Instance.Data.Users[i].score;
+            Debug.Log($"---------{name}   {score}");
+            Record.text += $"\nNo.{i}  {name}  {score}";
+        }
+        Debug.Log("£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡");
     }
 }
